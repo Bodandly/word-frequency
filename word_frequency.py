@@ -5,15 +5,30 @@ import sys
 def clean_up(word):
     '''Removes puncuation from each word.'''
     word = re.sub(r'[^A-Za-z]', "", word).lower()
-    # characters = (".", ",", ":","?","!","&", "*", "\"")
-    # dash = ("-")
-    # for char in characters:
-    # word = word.replace(char, "").lower()
     return word
 
+def print_top(word_tuples,counter=1, num_its=20):
+    """Prints the 20 or more most words used in a string."""
+    if word_tuples[0][1] > 50:
+        top_value = word_tuples[0][1]
+        for word in word_tuples[:num_its]:
+            multiplier = round(50 * (word[1]/top_value))
+            print(str(counter), word[0], str(word[1]), multiplier * "#")
+            counter += 1
 
-def dict_adder(words):
-    """Adds and counts all the words from the string into the dictionary."""
+    elif len(word_tuples) > 20:
+        for word in word_tuples[:num_its]:
+            print(str(counter), word[0], str(word[1]), word[1]*"#")
+            counter += 1
+
+    else:
+        for word in word_tuples[:len(word_tuples)]:
+            print(str(counter), word[0], str(word[1]), word[1]*"#")
+            counter += 1
+
+def word_frequency(words):
+    """creates a dictionary of word occurence in a string"""
+    word_dict = {}
     text = words.split()
     for word in text:
         word = clean_up(word)
@@ -23,38 +38,14 @@ def dict_adder(words):
             word_dict[word] += 1
         else:
             word_dict[word] = 1
-    return word_dict
-
-
-def word_frequency(long_string, counter=1, num_its=20):
-    """Counts the number of times a word is repeated in one long string of text."""
-    dict_adder(long_string)
     word_tuples = sorted(word_dict.items(), key=lambda word: word[1], reverse=True)
-
-    if word_tuples[0][1] > 50:
-        top_value = word_tuples[0][1]
-        for word in word_tuples[:num_its]:
-            multiplier = round(50 * (word[1]/top_value))
-            print(str(counter).ljust(10), word[0].ljust(10), str(word[1]).ljust(10), multiplier * "#")
-            counter += 1
-
-    elif len(word_tuples) > 20:
-        for word in word_tuples[:num_its]:
-            print(str(counter).ljust(10), word[0].ljust(10), str(word[1]).ljust(10), word[1]*"#")
-            counter += 1
-            
-    else:
-        for word in word_tuples[:len(word_tuples)]:
-            print(str(counter).ljust(10), word[0].ljust(10), str(word[1]).ljust(10), word[1]*"#")
-            counter += 1
-
+    print_top(word_tuples)
+    return word_dict
 
 def book_word_counter(book):
     """Counts the number of times a word is repeated in a specified book."""
     with open(book) as current_book:
-        word_frequency(current_book.read())
-
-word_dict = {}
+        return word_frequency(current_book.read())
 
 if __name__ == "__main__":
     book_word_counter(sys.argv[1])
